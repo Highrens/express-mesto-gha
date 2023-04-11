@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "app.js",
-    "dev": "nodemon app.js",
-    "test": "npx eslint"
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
