@@ -2,7 +2,7 @@
 # Проект Mesto фронтенд + бэкенд
 
 
-https://github.com/Highrens/express-mesto-gha​
+https://github.com/Highrens/express-mesto-gha
 
 ## Директории
 
