@@ -3,9 +3,7 @@ const User = require("../models/user");
 module.exports.getUsers = (req, res) => {
   User.find({})
   .then((user) =>{
-    if (user) {
-      res.status(200).send({data: user});
-    }
+      res.send({data: user});
   })
   .catch((err) => {
       res.status(500).send({ message: 'Произошла ошибка' })
@@ -16,7 +14,7 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) =>{
       if (user) {
-        res.status(200).send(user);
+        res.send(user);
       } else {
         res.status(404).send({message: "Пользователь по указанному _id не найден"})
       }
@@ -36,12 +34,12 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
   .then((user) =>{
     if (user) {
-      res.status(200).send(user);
+      res.send(user);
     }
   })
   .catch((err) => {
     console.log(err);
-    if (err._message == 'user validation failed') {
+   if (err.name === 'ValidationError')  {
       res.status(400).send({ message: 'Переданы некорректные данные при создании пользователя' })
     } else {
       res.status(500).send({ message: 'Произошла ошибка' })
@@ -51,17 +49,17 @@ module.exports.createUser = (req, res) => {
 //PATCH /users/me — обновляет профиль
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name: name, about: about })
+  User.findByIdAndUpdate(req.user._id, { name: name, about: about }, { runValidators: true, new: true })
   .then((user) =>{
     if (user) {
-      res.status(200).send(user);
+      res.send(user);
     } else {
       res.status(404).send({message: "Пользователь по указанному _id не найден"})
     }
   })
   .catch((err) => {
     console.log(err);
-    if (err._message == 'user validation failed') {
+    if (err.name === 'ValidationError') {
       res.status(400).send({ message: 'Переданы некорректные данные при обновлении профиля' })
     } else {
       res.status(500).send({ message: 'Произошла ошибка' })
@@ -72,17 +70,17 @@ module.exports.updateUser = (req, res) => {
 module.exports.updateUserAvatar = (req, res) => {
   const { avatar } = req.body;
   console.log(req.user._id, req.body);
-  User.findByIdAndUpdate(req.user._id, { avatar: avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar: avatar }, { runValidators: true, new: true })
   .then((user) =>{
     if (user) {
-      res.status(200).send(user);
+      res.send(user);
     } else {
       res.status(404).send({message: "Пользователь по указанному _id не найден"})
     }
   })
   .catch((err) => {
     console.log(err);
-    if (err._message == 'user validation failed') {
+   if (err.name === 'ValidationError')  {
       res.status(400).send({ message: 'Переданы некорректные данные при обновлении аватара' })
     } else {
       res.status(500).send({ message: 'Произошла ошибка' })

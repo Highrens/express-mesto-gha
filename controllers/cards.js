@@ -5,7 +5,7 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .then((card) => {
       if (card) {
-        res.status(200).send({ data: card });
+        res.send({ data: card });
       }
     })
     .catch((err) => {
@@ -18,11 +18,11 @@ module.exports.createCard = (req, res) => {
   Card.create({ name: req.body.name, link: req.body.link, owner: req.user._id })
     .then((card) => {
       if (card) {
-        res.status(200).send(card);
+        res.send(card);
       }
     })
     .catch((err) => {
-      if (err._message == "card validation failed") {
+   if (err.name === 'ValidationError')  {
         res.status(400).send({
           message: "Переданы некорректные данные при создании карточки",
         });
@@ -33,10 +33,10 @@ module.exports.createCard = (req, res) => {
 };
 //delete удаляет карту
 module.exports.deleteCard = (req, res) => {
-  Card.findById(req.user._id)
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (card) {
-        res.status(200).send({ message: "Карточка удалена" });
+        res.send({ message: "Карточка удалена" });
       } else {
         res
           .status(404)
@@ -55,7 +55,7 @@ module.exports.likeCard = (req, res) =>
   )
     .then((card) => {
       if (card) {
-        res.status(200).send({card: card.likes });
+        res.send({card: card.likes });
       } else {
         res
           .status(404)
@@ -74,7 +74,7 @@ module.exports.dislikeCard = (req, res) =>
   )
     .then((card) => {
       if (card) {
-        res.status(200).send({card: card.likes });
+        res.send({card: card.likes });
       } else {
         res
           .status(404)
