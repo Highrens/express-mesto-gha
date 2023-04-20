@@ -11,34 +11,34 @@ const {
 } = require('../controllers/users');
 
 router.get('/users', getUsers); // возвращает всех пользователей
+
 router.get('/users/:userId', celebrate({
   body: Joi.object().keys({
-    userid: Joi.string().required().min(2).max(30),
-  }).unknown(true),
+    userid: Joi.string().hex().required().min(2)
+      .max(30),
+  }),
 }), getUserById); // возвращает пользователя по _id
+
 router.post('/users', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
-  }).unknown(true),
+  }),
 }), createUser); // создаёт пользователя
-router.get('/user/me', celebrate({
-  body: Joi.object().keys({
-    userid: Joi.string().required().min(2).max(30),
-  }).unknown(true),
-}), getMe); // Возвращает текущего пользователя
+
+router.get('/user/me', getMe); // Возвращает текущего пользователя
+
 router.patch('/users/me', celebrate({
   body: Joi.object().keys({
-    userid: Joi.string().required().min(2).max(30),
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().min(2).max(30),
-  }).unknown(true),
+  }),
 }), updateUser); // обновляет профиль
+
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    userid: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().min(2),
-  }).unknown(true),
+    avatar: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?(([a-zA-Z0-9]+).)+/),
+  }),
 }), updateUserAvatar); // обновляет аватар
 
 module.exports = router;
