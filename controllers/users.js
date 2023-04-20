@@ -25,6 +25,8 @@ module.exports.getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new SomethingWrongError('Некоретный ID'));
+      } else {
+        next(err);
       }
     });
 };
@@ -92,7 +94,7 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600000,
         httpOnly: true,
       });
-      res.send(token);
+      res.send('Вы успешно вошли!');
     })
     .catch(next);
 };

@@ -22,8 +22,8 @@ app.use(auth);
 app.use('/', require('./routes/cards'));
 app.use('/', require('./routes/users'));
 
-app.use((req, res) => {
-  throw new NotFoundError('Ошибка путь не найден');
+app.use((req, res, next) => {
+  next(new NotFoundError('Ошибка путь не найден'));
 });
 
 app.use(errors());
