@@ -1,4 +1,5 @@
 //  const ConflictError = require('../errors/conflict-err');
+const ConflictError = require('../errors/conflict-err');
 const NotFoundError = require('../errors/not-found-err');
 const SomethingWrongError = require('../errors/something-wrong-err');
 const Card = require('../models/card');
@@ -34,12 +35,19 @@ module.exports.createCard = (req, res, next) => {
 
 // delete удаляет карту
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
+    .populate('owner')
     .then((card) => {
-      if (card) {
-        res.send({ message: 'Карточка удалена' });
+      if (card.owner._id.toString() === req.user._id.toString()) {
+        Card.deleteOne(card).then((deletedCard) => {
+          if (deletedCard) {
+            res.send({ message: 'Карточка удалена' });
+          } else {
+            next(new NotFoundError('Карточка по указанному _id не найдена'));
+          }
+        });
       } else {
-        next(new NotFoundError('Карточка по указанному _id не найдена'));
+        throw new ConflictError('Нет доступа');
       }
     })
     .catch((err) => {
