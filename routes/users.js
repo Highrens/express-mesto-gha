@@ -4,7 +4,6 @@ const { celebrate, Joi } = require('celebrate');
 const {
   getUsers,
   getUserById,
-  createUser,
   updateUser,
   updateUserAvatar,
   getMe,
@@ -14,24 +13,16 @@ router.get('/users', getUsers); // возвращает всех пользов�
 
 router.get('/users/:userId', celebrate({
   body: Joi.object().keys({
-    userid: Joi.string().hex().required().min(2)
-      .max(30),
+    userid: Joi.string().hex().required().length(24),
   }),
 }), getUserById); // возвращает пользователя по _id
-
-router.post('/users', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(8),
-  }),
-}), createUser); // создаёт пользователя
 
 router.get('/user/me', getMe); // Возвращает текущего пользователя
 
 router.patch('/users/me', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
   }),
 }), updateUser); // обновляет профиль
 

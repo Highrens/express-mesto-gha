@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const validator = require('validator');
 const NotFoundError = require('../errors/not-found-err');
 const SomethingWrongError = require('../errors/something-wrong-err');
 const ConflictError = require('../errors/conflict-err');
@@ -34,9 +33,6 @@ module.exports.getUserById = (req, res, next) => {
 // Post Создает пользователя
 module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
-  if (!validator.isEmail(req.body.email) || !validator.isLength(req.body.password, 8)) {
-    return next(new SomethingWrongError('Переданны неверные данные для регистрации'));
-  }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name,
@@ -91,9 +87,6 @@ module.exports.updateUserAvatar = (req, res, next) => {
 };
 
 module.exports.login = (req, res, next) => {
-  if (!validator.isEmail(req.body.email) || !validator.isLength(req.body.password, 8)) {
-    return next(new SomethingWrongError('Переданны неверные данные для входа'));
-  }
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {

@@ -47,7 +47,7 @@ module.exports.deleteCard = (req, res, next) => {
           }
         });
       } else {
-        throw new ConflictError('Нет доступа');
+        next(new ConflictError('Нет доступа'));
       }
     })
     .catch((err) => {
@@ -62,10 +62,11 @@ module.exports.likeCard = (req, res, next) => Card.findByIdAndUpdate(
   req.params.cardId,
   { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
   { new: true },
-)
+).populate('owner')
+  .populate('likes')
   .then((card) => {
     if (card) {
-      res.send({ card: card.likes });
+      res.send(card);
     } else {
       next(new NotFoundError('Карточка по указанному _id не найдена'));
     }
@@ -82,17 +83,18 @@ module.exports.dislikeCard = (req, res, next) => Card.findByIdAndUpdate(
   req.params.cardId,
   { $pull: { likes: req.user._id } }, // убрать _id из массива
   { new: true },
-)
+).populate('owner')
+  .populate('likes')
   .then((card) => {
     if (card) {
-      res.send({ card: card.likes });
+      res.send(card);
     } else {
       next(new NotFoundError('Карточка по указанному _id не найдена'));
     }
   })
   .catch((err) => {
     if (err.name === 'CastError') {
-      throw new SomethingWrongError('Ошибка: невалидный id');
+      next(new SomethingWrongError('Ошибка: невалидный id'));
     } else {
       next(err);
     }
